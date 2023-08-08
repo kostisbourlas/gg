@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 
@@ -25,18 +24,13 @@ func updateRun(cmd *cobra.Command, args []string) {
 	repo, _ := cmd.Flags().GetString("repo")
 	branch, _ := cmd.Flags().GetString("branch")
 	
-	err := changeDirectory(repo)
-	if err != nil {
-		fmt.Println(err)
-	}
 	isGitRepo := isGitRepository(repo)
-	
 	if isGitRepo == false {
-		fmt.Println("Given path is not a git repository.")
+		fmt.Println("Path is not a git repository.")
 		return 
 	}
 
-	err = checkoutToBranch(repo, branch)
+	err := checkoutToBranch(repo, branch)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -48,20 +42,6 @@ func updateRun(cmd *cobra.Command, args []string) {
 		return 
 
 	}
-}
-
-func changeDirectory(path string) error {
-	// checks if directory exists
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return fmt.Errorf("directory '%s' does not exist", path)
-	}
-
-	// Change the working directory
-	err := os.Chdir(path)
-	if err != nil {
-		return fmt.Errorf("error changing directory: %v", err)
-	}
-	return nil
 }
 
 func isGitRepository(path string) bool {
