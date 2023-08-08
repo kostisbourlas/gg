@@ -49,6 +49,7 @@ func updateRun(cmd *cobra.Command, args []string) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("Update ran successfully!")
 }
 
 func isGitRepository(path string) bool {
@@ -71,8 +72,18 @@ func getCurrentBranch(path string) string {
 func checkoutToBranch(path string, branch string) error {
 	cmd := exec.Command("git",  "-C", path, "checkout", branch)
 	output, err := cmd.CombinedOutput()
+
+	// performs git stash first if cannot checkout to branch
 	if err != nil {
-		return fmt.Errorf("error checking out to branch %s: %v", branch, err)
+		cmd := exec.Command("git", "-C", path, "stash")
+		_, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("checking out to branch: %s failed with error: %v", branch, err)
+		}
+		cmd = exec.Command("git",  "-C", path, "checkout", branch)
+		output, err := cmd.CombinedOutput()
+		fmt.Printf("%s\n", output)
+		return nil
 	}
 	fmt.Printf("%s\n", output)
 	return nil
@@ -81,8 +92,21 @@ func checkoutToBranch(path string, branch string) error {
 func updateGitRepository(path string) error {
 	cmd := exec.Command("git", "-C", path, "pull", "--rebase")
 	output, err := cmd.CombinedOutput()
+
+	// performs git stash first in order to git pull successfully
 	if err != nil {
-		return 	fmt.Errorf("error upgrading Git repository: %v", err)
+		fmt.Println("Performing git stash...")
+		cmd := exec.Command("git", "-C", path, "stash")
+		_, err := cmd.CombinedOutput()
+		if err != nil {
+			return 	fmt.Errorf("error upgrading Git repository: %v", err)
+		}
+		cmd = exec.Command("git", "-C", path, "pull", "--rebase")
+		output, _ := cmd.CombinedOutput()
+		fmt.Printf("%s\n", output)
+
+		cmd = exec.Command("git", "-C", path, "stash", "pop")
+		return nil
 	}
 	fmt.Printf("%s\n", output)
 	return nil
