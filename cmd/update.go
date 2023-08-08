@@ -30,6 +30,8 @@ func updateRun(cmd *cobra.Command, args []string) {
 		return 
 	}
 
+	current_branch := getCurrentBranch(repo)
+
 	err := checkoutToBranch(repo, branch)
 	if err != nil {
 		fmt.Println(err)
@@ -40,7 +42,12 @@ func updateRun(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fmt.Println(err)
 		return 
+	}
 
+	err = checkoutToBranch(repo, current_branch)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 }
 
@@ -52,6 +59,13 @@ func isGitRepository(path string) bool {
 	}
 
 	return strings.TrimSpace(string(output)) == "true"
+}
+
+func getCurrentBranch(path string) string {
+	cmd := exec.Command("git", "-C", path, "branch", "--show-current")
+	output, _ := cmd.CombinedOutput()
+	branch := strings.TrimSpace(string(output))
+	return branch
 }
 
 func checkoutToBranch(path string, branch string) error {
