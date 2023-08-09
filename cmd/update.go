@@ -23,7 +23,7 @@ var updateCmd = &cobra.Command{
 func updateRun(cmd *cobra.Command, args []string) {
 	path, _ := cmd.Flags().GetString("path")
 	branch, _ := cmd.Flags().GetString("branch")
-	
+
 	isGitRepo := isGitRepository(path)
 	if isGitRepo == false {
 		fmt.Println("Path is not a git repository.")
@@ -115,5 +115,5 @@ func updateGitRepository(path string) error {
 func init() {
 	rootCmd.AddCommand(updateCmd)
 	updateCmd.Flags().StringP("path", "p", "", "specific directory")
-	updateCmd.Flags().StringP("branch", "b", "", "specific git branch")
+	updateCmd.Flags().StringP("branch", "b", "master", "specific git branch")
 }
