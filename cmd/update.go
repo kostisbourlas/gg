@@ -1,6 +1,7 @@
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
 */
+
 package cmd
 
 import (
@@ -16,6 +17,7 @@ Usage:
 2. gg update ~/directory/repo1 ~/directory/repo2 --branch devel
 3. gg update ~/directory/repo1
 */
+
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Updates a git repo",

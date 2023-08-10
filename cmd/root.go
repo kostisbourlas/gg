@@ -1,7 +1,7 @@
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
-
 */
+
 package cmd
 
 import (
@@ -13,7 +13,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "gg",
 	Short: "A Git Repository Manager",
-	Long: "A Git Repository Manager",
+	Long:  "A Git Repository Manager",
 	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
@@ -27,5 +27,3 @@ func Execute() {
 func init() {
 
 }
-
-

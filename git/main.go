@@ -1,6 +1,7 @@
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
 */
+
 package git
 
 import (
@@ -38,9 +39,10 @@ func CheckoutToBranch(path string, branch string) error {
 		fmt.Println("Performing git stash...")
 		gitStashArgs := getGitStashArgs(path)
 		gitStashCmd := exec.Command(gitStashArgs[0], gitStashArgs[1:]...)
-		output, _ := gitStashCmd.CombinedOutput()
+		output, _ = gitStashCmd.CombinedOutput()
 		fmt.Printf("%s\n", output)
 
+		fmt.Printf("Performing git checkout to %s...\n", branch)
 		gitCheckoutCommand = exec.Command(cmdArgs[0], cmdArgs[1:]...)
 		output, err = gitCheckoutCommand.CombinedOutput()
 		fmt.Printf("%s\n", output)

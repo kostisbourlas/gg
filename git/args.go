@@ -1,6 +1,7 @@
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
 */
+
 package git
 
 func getGitPullRebaseArgs(path string) [5]string {
