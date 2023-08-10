@@ -27,10 +27,12 @@ func updateRun(cmd *cobra.Command, args []string) {
 	branch, _ := cmd.Flags().GetString("branch")
 
 	for _, path := range paths {
+		fmt.Printf("Initializing update for: %s \n", path)
+
 		isGitRepo := Git.IsGitRepository(path)
 		if isGitRepo == false {
 			fmt.Println("Path is not a git repository.")
-			return 
+			continue 
 		}
 	
 		current_branch := Git.GetCurrentBranch(path)

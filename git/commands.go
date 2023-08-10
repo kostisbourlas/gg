@@ -56,29 +56,29 @@ func CheckoutToBranch(path string, branch string) error {
 
 func UpdateGitRepository(path string) error {
 	gitPullRebaseArgs := getGitPullRebaseArgs(path)
-
 	gitPullRebaseCmd := exec.Command(gitPullRebaseArgs[0], gitPullRebaseArgs[1:]...)
 	output, err := gitPullRebaseCmd.CombinedOutput()
+	fmt.Printf("%s\n", output)
 
 	// performs git stash first in order to git pull successfully
 	if err != nil {
 		fmt.Println("Performing git stash...")
 		gitStashArgs := getGitStashArgs(path)
 		gitStashCmd := exec.Command(gitStashArgs[0], gitStashArgs[1:]...)
-		_, err := gitStashCmd.CombinedOutput()
+		output, _ := gitStashCmd.CombinedOutput()
+		fmt.Printf("%s\n", output)
+
+		gitPullRebaseCmd := exec.Command(gitPullRebaseArgs[0], gitPullRebaseArgs[1:]...)
+		output, err = gitPullRebaseCmd.CombinedOutput()
+		fmt.Printf("%s\n", output)
 		if err != nil {
 			return 	fmt.Errorf("error upgrading Git repository: %v", err)
 		}
-		gitPullRebaseCmd := exec.Command(gitPullRebaseArgs[0], gitPullRebaseArgs[1:]...)
-		output, _ := gitPullRebaseCmd.CombinedOutput()
-		fmt.Printf("%s\n", output)
 
 		gitStashPopArgs := getGitStashPopArgs(path)
 		gitStashPopCmd := exec.Command(gitStashPopArgs[0], gitStashPopArgs[1:]...)
 		output, _ = gitStashPopCmd.CombinedOutput()
 		fmt.Printf("%s\n", output)
-		return nil
 	}
-	fmt.Printf("%s\n", output)
 	return nil
 }
