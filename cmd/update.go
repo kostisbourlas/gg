@@ -1,27 +1,26 @@
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
-
 */
 package cmd
 
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	Git "github.com/kostisbourlas/gg/git"
+	"github.com/spf13/cobra"
 )
 
 /*
-	Usage: 
-	1. gg update /home/$USER/directory/repo1 --branch devel
-	2. gg update ~/directory/repo1 ~/directory/repo2 --branch devel
-	3. gg update ~/directory/repo1
+Usage:
+1. gg update /home/$USER/directory/repo1 --branch devel
+2. gg update ~/directory/repo1 ~/directory/repo2 --branch devel
+3. gg update ~/directory/repo1
 */
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Updates a git repo",
-	Long: `This command updates a  given git repo.`,
-	Run: updateRun,
+	Long:  `This command updates a  given git repo.`,
+	Run:   updateRun,
 }
 
 func updateRun(cmd *cobra.Command, args []string) {
@@ -37,29 +36,28 @@ func updateRun(cmd *cobra.Command, args []string) {
 		isGitRepo := Git.IsGitRepository(path)
 		if isGitRepo == false {
 			fmt.Println("Path is not a git repository.")
-			continue 
+			continue
 		}
-	
+
 		current_branch := Git.GetCurrentBranch(path)
-	
+
 		err := Git.CheckoutToBranch(path, branch)
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
-	
+
 		err = Git.UpdateGitRepository(path)
 		if err != nil {
 			fmt.Println(err)
-			return 
+			continue
 		}
-	
+
 		err = Git.CheckoutToBranch(path, current_branch)
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
-		fmt.Println("Update ran successfully!")
 	}
 }
 
