@@ -11,7 +11,12 @@ import (
 	Git "github.com/kostisbourlas/gg/git"
 )
 
-// updateCmd represents the update command
+/*
+	Usage: 
+	1. gg update /home/$USER/directory/repo1 --branch devel
+	2. gg update ~/directory/repo1 ~/directory/repo2 --branch devel
+	3. gg update ~/directory/repo1
+*/
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Updates a git repo",

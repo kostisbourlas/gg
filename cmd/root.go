@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-/*
-	gg update --path /home/kostis/Projects/ --branch devel
-	gg update --repo txc/
-*/
-
 var rootCmd = &cobra.Command{
 	Use:   "gg",
 	Short: "A Git Repository Manager",

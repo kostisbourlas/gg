@@ -1,4 +1,3 @@
-
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
 
@@ -10,7 +9,6 @@ import (
 	"os/exec"
 	"strings"
 )
-
 
 func IsGitRepository(path string) bool {
 	cmdArgs := getIsGitRepositoryArgs(path)

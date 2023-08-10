@@ -1,10 +1,8 @@
-
 /*
 Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
 
 */
 package git
-
 
 func getGitPullRebaseArgs(path string)[5]string {
 	return [5]string {"git", "-C", path, "pull", "--rebase"}
