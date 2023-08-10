@@ -13,7 +13,8 @@ import (
 
 
 func IsGitRepository(path string) bool {
-	cmd := exec.Command("git", "-C", path, "rev-parse", "--is-inside-work-tree")
+	cmdArgs := getIsGitRepositoryArgs(path)
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return false
@@ -23,25 +24,29 @@ func IsGitRepository(path string) bool {
 }
 
 func GetCurrentBranch(path string) string {
-	cmd := exec.Command("git", "-C", path, "branch", "--show-current")
+	cmdArgs := getGitShowCurrentBranchArgs(path)
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	output, _ := cmd.CombinedOutput()
 	branch := strings.TrimSpace(string(output))
 	return branch
 }
 
 func CheckoutToBranch(path string, branch string) error {
-	cmd := exec.Command("git",  "-C", path, "checkout", branch)
-	output, err := cmd.CombinedOutput()
+	cmdArgs := getGitCheckoutToBranchArgs(path, branch)
+	gitCheckoutCommand := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+
+	output, err := gitCheckoutCommand.CombinedOutput()
 
 	// performs git stash first if cannot checkout to branch
 	if err != nil {
-		cmd := exec.Command("git", "-C", path, "stash")
-		_, err := cmd.CombinedOutput()
+		gitStashArgs := getGitStashArgs(path)
+		gitStashCmd := exec.Command(gitStashArgs[0], gitStashArgs[1:]...)
+		_, err := gitStashCmd.CombinedOutput()
 		if err != nil {
 			return fmt.Errorf("checking out to branch: %s failed with error: %v", branch, err)
 		}
-		cmd = exec.Command("git",  "-C", path, "checkout", branch)
-		output, err := cmd.CombinedOutput()
+		gitCheckoutCommand = exec.Command(cmdArgs[0], cmdArgs[1:]...)
+		output, err := gitCheckoutCommand.CombinedOutput()
 		fmt.Printf("%s\n", output)
 		return nil
 	}
@@ -50,22 +55,28 @@ func CheckoutToBranch(path string, branch string) error {
 }
 
 func UpdateGitRepository(path string) error {
-	cmd := exec.Command("git", "-C", path, "pull", "--rebase")
-	output, err := cmd.CombinedOutput()
+	gitPullRebaseArgs := getGitPullRebaseArgs(path)
+
+	gitPullRebaseCmd := exec.Command(gitPullRebaseArgs[0], gitPullRebaseArgs[1:]...)
+	output, err := gitPullRebaseCmd.CombinedOutput()
 
 	// performs git stash first in order to git pull successfully
 	if err != nil {
 		fmt.Println("Performing git stash...")
-		cmd := exec.Command("git", "-C", path, "stash")
-		_, err := cmd.CombinedOutput()
+		gitStashArgs := getGitStashArgs(path)
+		gitStashCmd := exec.Command(gitStashArgs[0], gitStashArgs[1:]...)
+		_, err := gitStashCmd.CombinedOutput()
 		if err != nil {
 			return 	fmt.Errorf("error upgrading Git repository: %v", err)
 		}
-		cmd = exec.Command("git", "-C", path, "pull", "--rebase")
-		output, _ := cmd.CombinedOutput()
+		gitPullRebaseCmd := exec.Command(gitPullRebaseArgs[0], gitPullRebaseArgs[1:]...)
+		output, _ := gitPullRebaseCmd.CombinedOutput()
 		fmt.Printf("%s\n", output)
 
-		cmd = exec.Command("git", "-C", path, "stash", "pop")
+		gitStashPopArgs := getGitStashPopArgs(path)
+		gitStashPopCmd := exec.Command(gitStashPopArgs[0], gitStashPopArgs[1:]...)
+		output, _ = gitStashPopCmd.CombinedOutput()
+		fmt.Printf("%s\n", output)
 		return nil
 	}
 	fmt.Printf("%s\n", output)
