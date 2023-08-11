@@ -41,7 +41,7 @@ func updateRun(cmd *cobra.Command, args []string) {
 			continue
 		}
 
-		current_branch := Git.GetCurrentBranch(path)
+		currentBranch := Git.GetCurrentBranch(path)
 
 		err := Git.CheckoutToBranch(path, branch)
 		if err != nil {
@@ -55,7 +55,7 @@ func updateRun(cmd *cobra.Command, args []string) {
 			continue
 		}
 
-		err = Git.CheckoutToBranch(path, current_branch)
+		err = Git.CheckoutToBranch(path, currentBranch)
 		if err != nil {
 			fmt.Println(err)
 			continue
