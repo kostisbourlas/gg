@@ -6,14 +6,11 @@ package git
 
 import (
 	"fmt"
-	"os/exec"
 	"strings"
 )
 
 func IsGitRepository(path string) bool {
-	cmdArgs := getIsGitRepositoryArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := cmd.CombinedOutput()
+	output, err := performGitIsRepository(path)
 	if err != nil {
 		return false
 	}
@@ -21,31 +18,18 @@ func IsGitRepository(path string) bool {
 }
 
 func GetCurrentBranch(path string) string {
-	cmdArgs := getGitShowCurrentBranchArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, _ := cmd.CombinedOutput()
+	output, _ := performGitCurrentBranch(path)
 	return strings.TrimSpace(string(output))
 }
 
 func CheckoutToBranch(path string, branch string) error {
-	fmt.Printf("Performing git checkout to %s...\n", branch)
-	cmdArgs := getGitCheckoutToBranchArgs(path, branch)
-	gitCheckoutCommand := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := gitCheckoutCommand.CombinedOutput()
-	fmt.Printf("%s\n", output)
+	_, err := performGitCheckoutToBranch(path, branch)
 
-	// performs git stash first if cannot check out to branch
+	// performs git stash first if it cannot check out to branch
 	if err != nil {
-		fmt.Println("Performing git stash...")
-		gitStashArgs := getGitStashArgs(path)
-		gitStashCmd := exec.Command(gitStashArgs[0], gitStashArgs[1:]...)
-		output, _ = gitStashCmd.CombinedOutput()
-		fmt.Printf("%s\n", output)
+		performGitStash(path)
 
-		fmt.Printf("Performing git checkout to %s...\n", branch)
-		gitCheckoutCommand = exec.Command(cmdArgs[0], cmdArgs[1:]...)
-		output, err = gitCheckoutCommand.CombinedOutput()
-		fmt.Printf("%s\n", output)
+		_, err = performGitCheckoutToBranch(path, branch)
 
 		if err != nil {
 			return fmt.Errorf("git checkout to %s failed with error: %v", branch, err)
@@ -55,13 +39,13 @@ func CheckoutToBranch(path string, branch string) error {
 }
 
 func UpdateGitRepository(path string) error {
-	err := performGitPull(path)
+	_, err := performGitPull(path)
 
 	// performs git stash first in order to git pull successfully
 	if err != nil {
 		performGitStash(path)
 
-		err = performGitPull(path)
+		_, err = performGitPull(path)
 		if err != nil {
 			return fmt.Errorf("git pull --rebase failed with error: %v", err)
 		}
