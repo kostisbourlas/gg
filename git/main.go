@@ -27,10 +27,12 @@ func CheckoutToBranch(path string, branch string) error {
 
 	// performs git stash first if it cannot check out to branch
 	if err != nil {
-		performGitStash(path)
+		_, err = performGitStash(path)
+		if err != nil {
+			return fmt.Errorf("git stash failed with error: %v", err)
+		}
 
 		_, err = performGitCheckoutToBranch(path, branch)
-
 		if err != nil {
 			return fmt.Errorf("git checkout to %s failed with error: %v", branch, err)
 		}
@@ -43,14 +45,20 @@ func UpdateGitRepository(path string) error {
 
 	// performs git stash first in order to git pull successfully
 	if err != nil {
-		performGitStash(path)
+		_, err = performGitStash(path)
+		if err != nil {
+			return fmt.Errorf("git stash failed with error: %v", err)
+		}
 
 		_, err = performGitPull(path)
 		if err != nil {
 			return fmt.Errorf("git pull --rebase failed with error: %v", err)
 		}
 
-		performGitStashPop(path)
+		_, err = performGitStashPop(path)
+		if err != nil {
+			return fmt.Errorf("git stash pop failed with error: %v", err)
+		}
 	}
 	return nil
 }
