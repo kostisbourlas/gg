@@ -10,7 +10,7 @@ import (
 )
 
 func IsGitRepository(path string) bool {
-	output, err := performGitIsRepository(path)
+	output, err := executeGitCommand(getIsGitRepositoryArgs, path)
 	if err != nil {
 		return false
 	}
@@ -18,21 +18,21 @@ func IsGitRepository(path string) bool {
 }
 
 func GetCurrentBranch(path string) string {
-	output, _ := performGitCurrentBranch(path)
+	output, _ := executeGitCommand(getGitShowCurrentBranchArgs, path)
 	return strings.TrimSpace(string(output))
 }
 
 func CheckoutToBranch(path string, branch string) error {
-	_, err := performGitCheckoutToBranch(path, branch)
+	_, err := executeGitCommand(getGitCheckoutToBranchArgs, path, branch)
 
-	// performs git stash first if it cannot check out to branch
+	// performs git stash first in order to check out successfully
 	if err != nil {
-		_, err = performGitStash(path)
+		_, err = executeGitCommand(getGitStashArgs, path)
 		if err != nil {
 			return fmt.Errorf("git stash failed with error: %v", err)
 		}
 
-		_, err = performGitCheckoutToBranch(path, branch)
+		_, err = executeGitCommand(getGitCheckoutToBranchArgs, path, branch)
 		if err != nil {
 			return fmt.Errorf("git checkout to %s failed with error: %v", branch, err)
 		}
@@ -41,21 +41,21 @@ func CheckoutToBranch(path string, branch string) error {
 }
 
 func UpdateGitRepository(path string) error {
-	_, err := performGitPull(path)
+	_, err := executeGitCommand(getGitPullRebaseArgs, path)
 
 	// performs git stash first in order to git pull successfully
 	if err != nil {
-		_, err = performGitStash(path)
+		_, err = executeGitCommand(getGitStashArgs, path)
 		if err != nil {
 			return fmt.Errorf("git stash failed with error: %v", err)
 		}
 
-		_, err = performGitPull(path)
+		_, err = executeGitCommand(getGitPullRebaseArgs, path)
 		if err != nil {
 			return fmt.Errorf("git pull --rebase failed with error: %v", err)
 		}
 
-		_, err = performGitStashPop(path)
+		_, err = executeGitCommand(getGitStashPopArgs, path)
 		if err != nil {
 			return fmt.Errorf("git stash pop failed with error: %v", err)
 		}

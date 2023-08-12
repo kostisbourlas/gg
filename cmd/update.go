@@ -1,7 +1,3 @@
-/*
-Copyright © 2023 Kostis Bourlas <kostisbourlas@protonmail.com>
-*/
-
 package cmd
 
 import (

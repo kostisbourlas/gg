@@ -5,50 +5,18 @@ import (
 	"os/exec"
 )
 
-func performGitStashPop(path string) ([]byte, error) {
-	fmt.Println("Performing git stash pop...")
-	cmdArgs := getGitStashPopArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := cmd.CombinedOutput()
-	fmt.Printf("%s\n", output)
-	return output, err
-}
+type gitParams func(...string) []string
 
-func performGitStash(path string) ([]byte, error) {
-	fmt.Println("Performing git stash...")
-	cmdArgs := getGitStashArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := cmd.CombinedOutput()
-	fmt.Printf("%s\n", output)
-	return output, err
-}
+func executeGitCommand(getGitCommandParams gitParams, args ...string) ([]byte, error) {
+	var cmdArgs []string
+	if len(args) == 1 {
+		cmdArgs = getGitCommandParams(args[0])
+	} else if len(args) == 2 {
+		cmdArgs = getGitCommandParams(args[0], args[1])
+	} else {
+		fmt.Println("Invalid number of parameters. Give one or two.")
+	}
 
-func performGitPull(path string) ([]byte, error) {
-	fmt.Println("Performing git pull --rebase...")
-	cmdArgs := getGitPullRebaseArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := cmd.CombinedOutput()
-	fmt.Printf("%s\n", output)
-	return output, err
-}
-
-func performGitIsRepository(path string) ([]byte, error) {
-	cmdArgs := getIsGitRepositoryArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := cmd.CombinedOutput()
-	return output, err
-}
-
-func performGitCurrentBranch(path string) ([]byte, error) {
-	cmdArgs := getGitShowCurrentBranchArgs(path)
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	output, err := cmd.CombinedOutput()
-	return output, err
-}
-
-func performGitCheckoutToBranch(path string, branch string) ([]byte, error) {
-	fmt.Printf("Performing git checkout to %s...\n", branch)
-	cmdArgs := getGitCheckoutToBranchArgs(path, branch)
 	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	output, err := cmd.CombinedOutput()
 	fmt.Printf("%s\n", output)
