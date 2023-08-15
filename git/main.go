@@ -58,3 +58,21 @@ func UpdateGitRepository(path string) error {
 	}
 	return nil
 }
+
+func PreviewMerge(path string, branch string) error {
+	/*
+		git merge <branch> --no-ff --no-commit
+		git diff
+		git merge --abort
+	*/
+	_, _ = executeGitCommand(getGitMergeArgs, path, branch)
+
+	_, err := executeGitCommand(getGitDiffArgs, path, branch)
+	if err != nil {
+		return fmt.Errorf("git diff failed with error: %v", err)
+	}
+
+	_, err = executeGitCommand(getGitMergeAbortArgs, path, branch)
+
+	return nil
+}

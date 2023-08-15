@@ -36,3 +36,19 @@ func getIsGitRepositoryArgs(args ...string) []string {
 	path := args[0]
 	return []string{"git", "-C", path, "rev-parse", "--is-inside-work-tree"}
 }
+
+func getGitMergeArgs(args ...string) []string {
+	path := args[0]
+	branch := args[1]
+	return []string{"git", "-C", path, "merge", branch, "--no-ff", "--no-commit"}
+}
+
+func getGitMergeAbortArgs(args ...string) []string {
+	path := args[0]
+	return []string{"git", "-C", path, "merge", "--abort"}
+}
+
+func getGitDiffArgs(args ...string) []string {
+	path := args[0]
+	return []string{"git", "-C", path, "diff"}
+}
