@@ -61,11 +61,18 @@ func UpdateGitRepository(path string) error {
 
 func PreviewMerge(path string, branch string) error {
 	/*
-		git merge <branch> --no-ff --no-commit
-		git diff
-		git merge --abort
+		Performs the following commands in order to preview the conflicts if any.
+			git merge <branch> --no-ff --no-commit
+			git diff <branch>
+			git merge --abort
+		If there are no conflicts instead of git diff andgit  merge --abort, performs:
+			git reset --hard HEAD
 	*/
-	_, _ = executeGitCommand(getGitMergeArgs, path, branch)
+	output, _ := executeGitCommand(getGitMergeArgs, path, branch)
+	if !strings.Contains(string(output), "Automatic merge went well") {
+		_, _ = executeGitCommand(getGitResetHard, path)
+		return nil
+	}
 
 	_, err := executeGitCommand(getGitDiffArgs, path, branch)
 	if err != nil {

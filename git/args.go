@@ -50,5 +50,11 @@ func getGitMergeAbortArgs(args ...string) []string {
 
 func getGitDiffArgs(args ...string) []string {
 	path := args[0]
-	return []string{"git", "-C", path, "diff"}
+	branch := args[1]
+	return []string{"git", "-C", path, "diff", branch}
+}
+
+func getGitResetHard(args ...string) []string {
+	path := args[0]
+	return []string{"git", "-C", path, "reset", "--hard", "HEAD"}
 }
